@@ -394,7 +394,7 @@ function getWinner() {
 
     console.log({ distance });
 
-    const score = 100 - (distance / config.targetSize) * 100;
+    const score = 100 - (distance / (config.targetSize / 2)) * 100;
     if (score > highestScore) {
       highestScore = score;
       winner = ballUserMap[ball.id];
@@ -439,6 +439,7 @@ function subscribeToChat() {
               if (flickedBalls < config.entriesAtOnce) {
                 emoteImage = `https://static-cdn.jtvnw.net/emoticons/v2/${emote}/default/light/3.0`;
                 createBall(tags.username, emoteImage);
+                flickedBalls += 1;
               }
             });
           });
