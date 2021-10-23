@@ -392,8 +392,6 @@ function getWinner() {
         Math.pow(bullseyeLocation.y - ball.position.y, 2)
     );
 
-    console.log({ distance });
-
     const score = 100 - (distance / (config.targetSize / 2)) * 100;
     if (score > highestScore) {
       highestScore = score;
@@ -431,14 +429,22 @@ function subscribeToChat() {
           }
         }
 
-        let emoteImage;
+        let emoteImage: string;
         if (tags.emotes) {
           let flickedBalls = 0;
           Object.keys(tags.emotes).forEach((emote: any) => {
             tags.emotes[emote].forEach(() => {
               if (flickedBalls < config.entriesAtOnce) {
                 emoteImage = `https://static-cdn.jtvnw.net/emoticons/v2/${emote}/default/light/3.0`;
-                createBall(tags.username, emoteImage);
+                const imgElement = document.createElement("img");
+                imgElement.src = emoteImage;
+                imgElement.onload = function() {
+                  createBall(tags.username, emoteImage);
+                };
+                imgElement.onerror = function() {
+                  emoteImage = `https://static-cdn.jtvnw.net/emoticons/v2/${emote}/default/light/3.0`;
+                  createBall(tags.username, emoteImage);
+                };
                 flickedBalls += 1;
               }
             });
@@ -467,20 +473,16 @@ gameInterval = setInterval(() => {
       resultsScoreElement.innerText =
         score % 1 > 0 ? score.toFixed(2) : score.toString();
       resultsWinnerElement.innerText = winner;
-    } else {
-      resultsImageElement.src = "";
-      resultsTitleElement.innerText = "BOOOOOOO!";
-      resultsScoreElement.innerText = "";
-      resultsWinnerElement.innerText = "Better luck next time.";
-    }
 
-    resultsElement.style.opacity = "1";
+      setTimeout(() => {
+        if (resultsElement) {
+          resultsElement.style.opacity = "0";
+          init();
+        }
+      }, 10000);
+      resultsElement.style.opacity = "1";
+    }
+  } else {
+    init();
   }
-
-  setTimeout(() => {
-    if (resultsElement) {
-      resultsElement.style.opacity = "0";
-      init();
-    }
-  }, 10000);
 }, 1000 * config.gameTimeoutSeconds);
