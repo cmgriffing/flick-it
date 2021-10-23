@@ -433,7 +433,7 @@ function subscribeToChat() {
 
         let emoteImage;
         if (tags.emotes) {
-          tags.emotes.forEach((emote: any, index: number) => {
+          Object.keys(tags.emotes).forEach((emote: any, index: number) => {
             if (index < config.entriesAtOnce) {
               emoteImage = `https://static-cdn.jtvnw.net/emoticons/v2/${emote}/default/light/3.0`;
               createBall(tags.username, emoteImage);
