@@ -433,11 +433,14 @@ function subscribeToChat() {
 
         let emoteImage;
         if (tags.emotes) {
-          Object.keys(tags.emotes).forEach((emote: any, index: number) => {
-            if (index < config.entriesAtOnce) {
-              emoteImage = `https://static-cdn.jtvnw.net/emoticons/v2/${emote}/default/light/3.0`;
-              createBall(tags.username, emoteImage);
-            }
+          let flickedBalls = 0;
+          Object.keys(tags.emotes).forEach((emote: any) => {
+            tags.emotes[emote].forEach(() => {
+              if (flickedBalls < config.entriesAtOnce) {
+                emoteImage = `https://static-cdn.jtvnw.net/emoticons/v2/${emote}/default/light/3.0`;
+                createBall(tags.username, emoteImage);
+              }
+            });
           });
         } else {
           createBall(tags.username);
