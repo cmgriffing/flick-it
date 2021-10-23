@@ -1,0 +1,21 @@
+{
+  "name": "flick-it",
+  "version": "0.0.42",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "dev": "vitepress dev pages",
+    "build": "vitepress build pages",
+    "serve": "vitepress serve pages",
+    "deploy:config:copy": "mv ./pages/.vitepress/dist ./dist",
+    "deploy:player:copy": "bash copy-player.sh",
+    "deploy": "yarn build && yarn deploy:config:copy && yarn deploy:player:copy && gh-pages -d dist"
+  },
+  "devDependencies": {
+    "gh-pages": "^3.2.3",
+    "vitepress": "^0.20.0"
+  },
+  "dependencies": {
+    "element-plus": "^1.1.0-beta.24"
+  }
+}
