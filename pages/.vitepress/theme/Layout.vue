@@ -133,12 +133,12 @@ export default defineComponent({
   data() {
     return {
       channelName: "",
-      gameTimeoutSeconds: 60,
+      gameTimeoutSeconds: 90,
       entriesPerUser: 1,
       entriesAtOnce: 1,
-      targetSize: 160,
-      baseBallSize: 10,
-      maxBallSize: 100,
+      targetSize: 240,
+      baseBallSize: 40,
+      maxBallSize: 60,
       basePlayerUrl: "https://cmgriffing.github.io/flick-it/player",
     };
   },
