@@ -139,7 +139,7 @@ export default defineComponent({
       targetSize: 160,
       baseBallSize: 10,
       maxBallSize: 100,
-      basePlayerUrl: process.env.VITE_PLAYER_URL,
+      basePlayerUrl: "https://cmgriffing.github.io/flick-it/player",
     };
   },
   setup() {},
