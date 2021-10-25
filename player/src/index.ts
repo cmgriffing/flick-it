@@ -41,7 +41,7 @@ let client;
 let width = document.body.clientWidth;
 let height = document.body.clientHeight;
 let ballInterval: any;
-let gameInterval: any;
+let gameTimeout: any;
 let clickHandler: any;
 let balls: Matter.Body[] = [];
 let ballUserMap: { [key: string]: string } = {};
@@ -77,6 +77,7 @@ const textures = [
 ];
 
 function init() {
+  console.log("FIRING INIT");
   width = document.body.clientWidth;
   height = document.body.clientHeight;
   let vmin = Math.min(width, height);
@@ -330,7 +331,9 @@ if ((module as any).hot) {
   (module as any).hot.dispose(function() {
     if (ballInterval) {
       clearInterval(ballInterval);
-      clearInterval(gameInterval);
+    }
+    if (gameTimeout) {
+      clearTimeout(gameTimeout);
     }
   });
 }
@@ -363,7 +366,6 @@ setTimeout(() => {
   resultsTitleElement = document.querySelector(".results-title");
   resultsScoreElement = document.querySelector(".results-score");
   resultsWinnerElement = document.querySelector(".results-winner");
-  init();
 
   const url = new URL(document.location.href);
   const queryParams = new URLSearchParams(url.search);
@@ -378,8 +380,6 @@ setTimeout(() => {
   console.log({ config });
 
   subscribeToChat();
-
-  window.addEventListener("resize", init);
 }, 3000);
 
 function getWinner() {
@@ -415,6 +415,10 @@ function subscribeToChat() {
       if (self) return;
 
       if (message.toLowerCase().indexOf("!flick") === 0) {
+        if (!gameTimeout) {
+          init();
+        }
+
         if (config.entriesPerUser) {
           if (!alreadyPlayedPlayers[tags["user-id"]]) {
             alreadyPlayedPlayers[tags["user-id"]] = 1;
@@ -436,15 +440,7 @@ function subscribeToChat() {
             tags.emotes[emote].forEach(() => {
               if (flickedBalls < config.entriesAtOnce) {
                 emoteImage = `https://static-cdn.jtvnw.net/emoticons/v2/${emote}/default/light/3.0`;
-                const imgElement = document.createElement("img");
-                imgElement.src = emoteImage;
-                imgElement.onload = function() {
-                  createBall(tags.username, emoteImage);
-                };
-                imgElement.onerror = function() {
-                  emoteImage = `https://static-cdn.jtvnw.net/emoticons/v2/${emote}/default/light/3.0`;
-                  createBall(tags.username, emoteImage);
-                };
+                createBall(tags.username, emoteImage);
                 flickedBalls += 1;
               }
             });
@@ -457,32 +453,38 @@ function subscribeToChat() {
   );
 }
 
-gameInterval = setInterval(() => {
-  //set results values
-  if (
-    resultsElement &&
-    resultsImageElement &&
-    resultsTitleElement &&
-    resultsScoreElement &&
-    resultsWinnerElement
-  ) {
-    const { winner, score, image } = getWinner();
-    if (score > 0) {
-      resultsImageElement.src = image;
-      resultsTitleElement.innerText = "WINNER!!";
-      resultsScoreElement.innerText =
-        score % 1 > 0 ? score.toFixed(2) : score.toString();
-      resultsWinnerElement.innerText = winner;
+function createGameTimeout() {
+  gameTimeout = setTimeout(() => {
+    //set results values
+    if (
+      resultsElement &&
+      resultsImageElement &&
+      resultsTitleElement &&
+      resultsScoreElement &&
+      resultsWinnerElement
+    ) {
+      const { winner, score, image } = getWinner();
+      if (score > 0) {
+        resultsImageElement.src = image;
+        resultsTitleElement.innerText = "WINNER!!";
+        resultsScoreElement.innerText =
+          score % 1 > 0 ? score.toFixed(2) : score.toString();
+        resultsWinnerElement.innerText = winner;
 
-      setTimeout(() => {
-        if (resultsElement) {
-          resultsElement.style.opacity = "0";
-          init();
-        }
-      }, 10000);
-      resultsElement.style.opacity = "1";
+        setTimeout(() => {
+          if (resultsElement) {
+            resultsElement.style.opacity = "0";
+            Composite.clear(engine.world, false);
+            Engine.clear(engine);
+            gameTimeout = undefined;
+          }
+        }, 10000);
+        resultsElement.style.opacity = "1";
+      } else {
+        Composite.clear(engine.world, false);
+        Engine.clear(engine);
+        gameTimeout = undefined;
+      }
     }
-  } else {
-    init();
-  }
-}, 1000 * config.gameTimeoutSeconds);
+  }, 1000 * config.gameTimeoutSeconds);
+}
