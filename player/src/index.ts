@@ -40,6 +40,7 @@ let client;
 
 let width = document.body.clientWidth;
 let height = document.body.clientHeight;
+let widthRatio = 1;
 let ballInterval: any;
 let gameTimeout: any;
 let clickHandler: any;
@@ -78,8 +79,10 @@ const textures = [
 
 function init() {
   console.log("FIRING INIT");
-  width = document.body.clientWidth;
-  height = document.body.clientHeight;
+
+  width = 1920; //document.body.clientWidth;
+  height = 1080; //document.body.clientHeight;
+  widthRatio = 1920 / document.body.clientWidth;
   let vmin = Math.min(width, height);
   alreadyPlayedPlayers = {};
   balls = [];
@@ -87,7 +90,19 @@ function init() {
 
   cleanupPreviousInit();
   clickHandler = (event: MouseEvent) => {
-    createBall("FOOOO", undefined, event.clientX, event.clientY);
+    if (!gameTimeout) {
+      init();
+      createGameTimeout();
+    }
+    const { clientX, clientY } = event;
+    const { clientHeight, clientWidth } = document.body;
+
+    // const heightRatio = 1080 / clientHeight;
+    console.log(
+      { widthRatio, clientX, clientY, clientHeight, clientWidth },
+      clientX * widthRatio
+    );
+    createBall("FOOOO", undefined, clientX * widthRatio, clientY * widthRatio);
   };
   document.addEventListener("click", clickHandler);
 
@@ -112,7 +127,6 @@ function init() {
   });
 
   let render = Render.create({
-    // canvas: world,
     engine: engine,
     canvas: document.querySelector(".faces") as HTMLCanvasElement,
     options: {
@@ -253,7 +267,7 @@ function createBall(
   const xDistance = bullseyeLocation.x - x;
   const slope = yDistance / xDistance;
   // console.log("bullseye", bullseyeLocation, x, y);
-  const distance = getDistance({ x, y }, bullseyeLocation);
+  const distance = getDistance({ x, y }, bullseyeLocation) * widthRatio;
   // console.log({ distance });
 
   let xModifier = 1;
@@ -417,6 +431,7 @@ function subscribeToChat() {
       if (message.toLowerCase().indexOf("!flick") === 0) {
         if (!gameTimeout) {
           init();
+          createGameTimeout();
         }
 
         if (config.entriesPerUser) {

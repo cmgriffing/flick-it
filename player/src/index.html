@@ -17,12 +17,12 @@
 
   .faces {
     display: block;
-    height: calc(100vh + 4px);
+    height: auto;
     width: calc(100vw + 4px);
     margin: 0;
     overflow: hidden;
     position: absolute;
-    top: -2px;
+    /* top: -2px; */
     left: -2px;
     z-index: 1;
   }
@@ -74,7 +74,7 @@
   }
 </style>
 
-<canvas class="faces"></canvas>
+<canvas class="faces" height="1080" width="1920"></canvas>
 
 <div class="results-container">
   <div class="results">

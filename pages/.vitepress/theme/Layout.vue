@@ -42,7 +42,7 @@
             <el-input
               label="Twitch channel name"
               v-model="channelName"
-              @change="channelName = $event"
+              @change="handleChange('channelName')($event)"
             />
           </el-label>
         </div>
@@ -58,7 +58,7 @@
                 v-model="gameTimeoutSeconds"
                 :min="1"
                 :max="180"
-                @change="gameTimeoutSeconds = parseInt($event)"
+                @change="handleChange('gameTimeoutSeconds')(parseInt($event))"
               />
             </el-label>
           </div>
@@ -73,7 +73,7 @@
                 v-model="entriesPerUser"
                 :min="1"
                 :max="100"
-                @change="entriesPerUser = parseInt($event)"
+                @change="handleChange('entriesPerUser')(parseInt($event))"
               />
             </el-label>
           </div>
@@ -88,7 +88,7 @@
                 v-model="entriesAtOnce"
                 :min="1"
                 :max="100"
-                @change="entriesAtOnce = parseInt($event)"
+                @change="handleChange('entriesAtOnce')(parseInt($event))"
               />
             </el-label>
           </div>
@@ -103,7 +103,7 @@
                 v-model="targetSize"
                 :min="120"
                 :max="420"
-                @change="targetSize = parseInt($event)"
+                @change="handleChange('targetSize')(parseInt($event))"
               />
             </el-label>
           </div>
@@ -118,7 +118,7 @@
                 v-model="baseBallSize"
                 :min="1"
                 :max="100"
-                @change="baseBallSize = parseInt($event)"
+                @change="handleChange('baseBallSize')(parseInt($event))"
               />
             </el-label>
           </div>
@@ -133,7 +133,7 @@
                 v-model="maxBallSize"
                 :min="1"
                 :max="100"
-                @change="maxBallSize = parseInt($event)"
+                @change="handleChange('maxBallSize')(parseInt($event))"
               />
             </el-label>
           </div>
@@ -166,130 +166,158 @@ import { defineComponent, ref, onMounted } from "vue";
 
 import { ElMessage } from "element-plus";
 
-import Shepherd from "shepherd.js";
 import "shepherd.js/dist/css/shepherd.css";
 import "./welcome.css";
+// import Shepherd from "shepherd.js";
 
-const tour = new Shepherd.Tour({
-  defaultStepOptions: {
-    classes: "shadow-md bg-purple-dark",
-    scrollTo: true,
-  },
-  cancelIcon: {
-    enabled: true,
-  },
-  classes: "class-1 class-2",
-  scrollTo: {
-    behavior: "smooth",
-    block: "center",
-  },
-  useModalOverlay: true,
-});
+let tour;
+function setupTour(finishedCallback) {
+  if (typeof window !== "undefined") {
+    const scriptElement = document.createElement("script");
+    scriptElement.src = "/flick-it/shepherd.min.js";
+    scriptElement.onload = function() {
+      tour = new Shepherd.Tour({
+        defaultStepOptions: {
+          classes: "shadow-md bg-purple-dark",
+          scrollTo: true,
+        },
+        cancelIcon: {
+          enabled: true,
+        },
+        classes: "class-1 class-2",
+        scrollTo: {
+          behavior: "smooth",
+          block: "center",
+        },
+        useModalOverlay: true,
+      });
 
-tour.addStep({
-  id: "config-step",
-  text: "Welcome. Getting started is quick and easy.",
-  buttons: [
-    {
-      action: () => {
-        window.localStorage.setItem(ONBOARDING_COMPLETE, true);
-        tour.cancel();
+      tour.addStep({
+        id: "config-step",
+        text: "Welcome. Getting started is quick and easy.",
+        buttons: [
+          {
+            action: () => {
+              getWindow().localStorage.setItem(ONBOARDING_COMPLETE, true);
+              tour.cancel();
+            },
+            secondary: true,
+            text: "Exit",
+          },
+          {
+            text: "Next",
+            action: tour.next,
+          },
+        ],
+      });
+
+      tour.addStep({
+        id: "channel-name-step",
+        text:
+          "Enter you channel name so that the game can listen to your chat's commands.",
+        attachTo: {
+          element: "#channel-name-step",
+          on: "right",
+        },
+        buttons: [
+          {
+            action: tour.back,
+            secondary: true,
+            text: "Back",
+          },
+          {
+            text: "Next",
+            action: tour.next,
+          },
+        ],
+      });
+
+      tour.addStep({
+        id: "other-config-step",
+        text: "You can also customize some of the rules of the game.",
+        attachTo: {
+          element: "#other-config-step",
+          on: "right",
+        },
+        buttons: [
+          {
+            action: tour.back,
+            secondary: true,
+            text: "Back",
+          },
+          {
+            text: "Next",
+            action: tour.next,
+          },
+        ],
+      });
+
+      tour.addStep({
+        id: "player-url-step",
+        text:
+          "Copy your url and paste it into a BrowserSource in your streaming software. Make the dimensions of the browser source equal to your stream output.",
+        attachTo: {
+          element: "#player-url-step",
+          on: "bottom",
+        },
+        buttons: [
+          {
+            action: tour.back,
+            secondary: true,
+            text: "Back",
+          },
+          {
+            text: "Next",
+            action: tour.next,
+          },
+        ],
+      });
+
+      tour.addStep({
+        id: "player-step",
+        text:
+          "This preview is a poor representation of the game physics. We recommend you copy the URL to a new browser window and make it the size of your stream output.",
+        attachTo: {
+          element: "#player-step",
+          on: "top",
+        },
+        buttons: [
+          {
+            action: tour.back,
+            secondary: true,
+            text: "Back",
+          },
+          {
+            text: "Finish",
+            action: () => {
+              getWindow().localStorage.setItem(ONBOARDING_COMPLETE, true);
+              tour.next();
+            },
+          },
+        ],
+      });
+
+      finishedCallback();
+    };
+    document.body.appendChild(scriptElement);
+  }
+}
+
+function getWindow() {
+  if (typeof window !== "undefined") {
+    return window;
+  } else {
+    return {
+      location: {
+        hostname: "",
       },
-      secondary: true,
-      text: "Exit",
-    },
-    {
-      text: "Next",
-      action: tour.next,
-    },
-  ],
-});
-
-tour.addStep({
-  id: "channel-name-step",
-  text:
-    "Enter you channel name so that the game can listen to your chat's commands.",
-  attachTo: {
-    element: "#channel-name-step",
-    on: "right",
-  },
-  buttons: [
-    {
-      action: tour.back,
-      secondary: true,
-      text: "Back",
-    },
-    {
-      text: "Next",
-      action: tour.next,
-    },
-  ],
-});
-
-tour.addStep({
-  id: "other-config-step",
-  text: "You can also customize some of the rules of the game.",
-  attachTo: {
-    element: "#other-config-step",
-    on: "right",
-  },
-  buttons: [
-    {
-      action: tour.back,
-      secondary: true,
-      text: "Back",
-    },
-    {
-      text: "Next",
-      action: tour.next,
-    },
-  ],
-});
-
-tour.addStep({
-  id: "player-url-step",
-  text:
-    "Copy your url and paste it into a BrowserSource in your streaming software. Make the dimensions of the browser source equal to your stream output.",
-  attachTo: {
-    element: "#player-url-step",
-    on: "bottom",
-  },
-  buttons: [
-    {
-      action: tour.back,
-      secondary: true,
-      text: "Back",
-    },
-    {
-      text: "Next",
-      action: tour.next,
-    },
-  ],
-});
-
-tour.addStep({
-  id: "player-step",
-  text:
-    "This preview is a poor representation of the game physics. We recommend you copy the URL to a new browser window and make it the size of your stream output.",
-  attachTo: {
-    element: "#player-step",
-    on: "top",
-  },
-  buttons: [
-    {
-      action: tour.back,
-      secondary: true,
-      text: "Back",
-    },
-    {
-      text: "Finish",
-      action: () => {
-        window.localStorage.setItem(ONBOARDING_COMPLETE, true);
-        tour.next();
+      localStorage: {
+        getItem: function() {},
+        setItem: function() {},
       },
-    },
-  ],
-});
+    };
+  }
+}
 
 const ONBOARDING_COMPLETE = "ONBOARDING_COMPLETE";
 
@@ -304,22 +332,14 @@ export default defineComponent({
       baseBallSize: 40,
       maxBallSize: 60,
       basePlayerUrl:
-        window.location.hostname === "localhost"
+        getWindow().location.hostname === "localhost"
           ? "http://localhost:1234"
           : "https://cmgriffing.github.io/flick-it/player",
       tour,
     };
   },
-  setup() {
+  setup(props, context) {
     const playerUrlElement = ref(null);
-
-    onMounted(() => {
-      console.log("onMounted", playerUrlElement.value);
-
-      if (!window.localStorage.getItem(ONBOARDING_COMPLETE)) {
-        tour.start();
-      }
-    });
 
     const showCopied = (success) => {
       if (success) {
@@ -334,6 +354,29 @@ export default defineComponent({
       showCopied,
     };
   },
+  mounted() {
+    setupTour(() => {
+      if (!getWindow().localStorage.getItem(ONBOARDING_COMPLETE)) {
+        tour.start();
+      }
+    });
+
+    [
+      "channelName",
+      "gameTimeoutSeconds",
+      "entriesPerUser",
+      "entriesAtOnce",
+      "targetSize",
+      "baseBallSize",
+      "maxBallSize",
+    ].forEach((propertyName) => {
+      const propertyValue = getWindow().localStorage.getItem(propertyName);
+
+      if (propertyValue) {
+        this[propertyName] = propertyValue;
+      }
+    });
+  },
   head() {
     return {
       bodyAttrs: {
@@ -342,6 +385,12 @@ export default defineComponent({
     };
   },
   methods: {
+    handleChange(propertyName) {
+      return (event) => {
+        this[propertyName] = event;
+        getWindow().localStorage.setItem(propertyName, event);
+      };
+    },
     getPlayerUrl() {
       return `${this.basePlayerUrl}?channelName=${this.channelName}&gameTimeoutSeconds=${this.gameTimeoutSeconds}&entriesAtOnce=${this.entriesAtOnce}&entriesPerUser=${this.entriesPerUser}&baseBallSize=${this.baseBallSize}&maxBallSize=${this.maxBallSize}&targetSize=${this.targetSize}`;
     },
