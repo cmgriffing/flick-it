@@ -1,0 +1,1 @@
+import{_ as e,c as t,o as a}from"./app.cffe2c0e.js";const f='{"title":"","description":"","frontmatter":{},"relativePath":"index.md","lastUpdated":1635022357080}',r={};function c(o,n,s,p,d,i){return a(),t("div")}var l=e(r,[["render",c]]);export{f as __pageData,l as default};
