@@ -19,10 +19,10 @@ yarn install
 ```
 
 You will also need to install the game depenencies
+<!--- Dumbest change I could ever make but its a change --->
 
 ```
-cd player
-yarn install
+cd player && yarn install
 ```
 
 In each terminal, run:
