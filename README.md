@@ -29,11 +29,9 @@ run-p cinstall pinstall
 
 In each terminal, run:
 
-
 ```
 yarn dev
 ```
-
 
 ## License
 
