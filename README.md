@@ -20,6 +20,7 @@ yarn add npm-run-all --dev
 Then install the app's dependencies.
 
 ## make sure you're in the root directory
+
 <!-- we do run-p because sometimes run-s fails on windows --!>
 
 ```
