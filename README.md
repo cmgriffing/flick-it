@@ -22,14 +22,19 @@ Then install the app's dependencies.
 ## make sure you're in the root directory
 <!-- we do run-p because sometimes run-s fails on windows --!>
 ```
+
 run-p cinstall pinstall 
+
 ```
 
 In each terminal, run:
 
 ```
+
 yarn dev
+
 ```
+
 
 ## License
 
