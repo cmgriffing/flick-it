@@ -22,7 +22,11 @@ You will also need to install the game depenencies
 <!--- Dumbest change I could ever make but its a change --->
 
 ```
+Linux mac and other unix systems:
 cd player && yarn install
+Windows:
+cd player 
+yarn install
 ```
 
 In each terminal, run:
