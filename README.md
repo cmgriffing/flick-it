@@ -12,8 +12,6 @@ Contributing is easy. To get started clone the repo.
 
 It is helpful to maintain two separate terminals for each, the configuration app and the game.
 
-install ![npm-run-all](https://github.com/mysticatea/npm-run-all)
-
 Then install the app's dependencies.
 
 ## make sure you're in the root directory
@@ -21,7 +19,7 @@ Then install the app's dependencies.
 <!-- we do run-p because sometimes run-s fails on windows -->
 
 ```
-run-p cinstall pinstall 
+run-s cinstall pinstall 
 ```
 
 In each terminal, run:

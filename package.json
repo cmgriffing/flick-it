@@ -9,7 +9,10 @@
     "serve": "vitepress serve pages",
     "deploy:config:copy": "mv ./pages/.vitepress/dist ./dist",
     "deploy:player:copy": "bash copy-player.sh",
-    "deploy": "rm -rf dist && yarn build && yarn deploy:config:copy && yarn deploy:player:copy && gh-pages -d dist",
+    "deploy:dist:clean":"rm -rf dist",
+    "deploy:build":"yarn build",
+    "deploy:gh-pages":"gh-pages -d dist",
+    "deploy": "run-s  deploy:build deploy:config:copy deploy:player:copy deploy:gh-pages",
     "pinstall": "yarn install --modules-folder ./player",
     "cinstall": "yarn install"
   },
