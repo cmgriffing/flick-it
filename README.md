@@ -16,7 +16,7 @@ Then install the app's dependencies.
 make sure you're in the /flick-it directory 
 and not in flick-it/player
 ```
-run-s cinstall pinstall
+yarn setup
 ```
 
 In each terminal, run:
