@@ -12,17 +12,11 @@ Contributing is easy. To get started clone the repo.
 
 It is helpful to maintain two separate terminals for each, the configuration app and the game.
 
-Then install the configuration app's dependencies.
-
+Then install the app's dependencies.
+make sure you're in the /flick-it directory 
+and not in flick-it/player
 ```
-yarn install
-```
-
-You will also need to install the game depenencies
-
-```
-cd player
-yarn install
+yarn setup
 ```
 
 In each terminal, run:
