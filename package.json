@@ -11,9 +11,9 @@
     "deploy:player:copy": "bash copy-player.sh",
     "deploy:gh-pages": "gh-pages -d dist",
     "deploy": "run-s  build deploy:config:copy deploy:player:copy deploy:gh-pages",
-    "pinstall": "yarn install --modules-folder ./player",
-    "cinstall": "yarn install"
-    "setup": "run-s cinstall pinstall"
+    "install:player": "yarn install --modules-folder ./player",
+    "install:player": "yarn install"
+    "setup": "run-s install:player install:player"
   },
   "devDependencies": {
     "gh-pages": "^3.2.3",    
