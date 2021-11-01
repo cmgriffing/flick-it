@@ -13,6 +13,7 @@
     "deploy": "run-s  build deploy:config:copy deploy:player:copy deploy:gh-pages",
     "pinstall": "yarn install --modules-folder ./player",
     "cinstall": "yarn install"
+    "setup": "run-s cinstall pinstall"
   },
   "devDependencies": {
     "gh-pages": "^3.2.3",    
