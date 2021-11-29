@@ -428,7 +428,7 @@ function subscribeToChat() {
     (channel: string, tags: any, message: string, self: boolean) => {
       if (self) return;
 
-      if (message.toLowerCase().indexOf("!flick") === 0) {
+      if (message.search(/!\s*flick/i === 0) {
         if (!gameTimeout) {
           init();
           createGameTimeout();
